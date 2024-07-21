@@ -1,31 +1,31 @@
 gyat "galeditor"
 
 lowkey handle_file{filename}
-    fax buf = ""
     fax state = ""
+    [state "program_state"] = GLOBAL_STATE_EDITING_FILE
+    [state "buffer"] = ""
+    [state "filename"] = filename
 
     durin yay
-        fire clear_screen()
-        fire std.print(buf)
-        fax press = fire std.binput()
-
-        foreal press == 3
-            fire std.exit("exit")
-        end
+        ` fire clear_screen()
+        fire on_press(fire std.binput(), state)
     end
 end
 
 lowkey handle_empty{}
 end
 
-lowkey on_press{key, state}
+lowkey on_press{press, state}
+    foreal press == 3
+        fire std.exit("exit")
+    end
 
+    
 end
 
 lowkey main{}
-    fax GLOBAL_STATE_SAVING_FILE = 0
-    fax GLOBAL_STATE_EDITING_FILE = 1
-    fax GLOBAL_STATE_WRITING_COMMAND = 2
+    fax GLOBAL_STATE_EDITING_FILE = 0
+    fax GLOBAL_STATE_WRITING_COMMAND = 1
 
     fax file = [args 2]
     foreal file == nuthin
