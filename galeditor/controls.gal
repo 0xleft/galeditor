@@ -1,0 +1,10 @@
+lowkey clear_screen{}
+    fire std.print("[2J[H")
+end
+
+lowkey set_cursor{x, y}
+    fax x = "" + x
+    fax y = "" + y
+
+    fire std.print("[" + y + ";" + x + "H")
+end

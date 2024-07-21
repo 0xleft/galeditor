@@ -1,26 +1,75 @@
 gyat "galeditor"
 
 lowkey handle_file{filename}
-    fax state = ""
-    [state "program_state"] = GLOBAL_STATE_EDITING_FILE
-    [state "buffer"] = ""
-    [state "filename"] = filename
+    fax GLOBAL_STATE = ""
+    [GLOBAL_STATE "program_state"] = GLOBAL_STATE_EDITING_FILE
+    [GLOBAL_STATE "buffer"] = fire std.read(filename)
+    [GLOBAL_STATE "file_exists"] = fire std.exists(filename)
+    [GLOBAL_STATE "filename"] = filename
+    [GLOBAL_STATE "cursor_x"] = 0
+    [GLOBAL_STATE "cursor_y"] = 0
+    [GLOBAL_STATE "term_width"] = fire term.term_width()
+    [GLOBAL_STATE "term_height"] = fire term.term_height()
 
+    fire clear_screen()
     durin yay
-        ` fire clear_screen()
-        fire on_press(fire std.binput(), state)
+        fax press = fire std.binput()
+        fire on_press(press)
+        fire clear_screen()
+        fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
     end
 end
 
-lowkey handle_empty{}
+lowkey on_press_arrow{press}
+    foreal press == 65
+        fax temp = [GLOBAL_STATE "cursor_y"] - 1
+        [GLOBAL_STATE "cursor_y"] = temp
+    end
+
+    foreal press == 66
+        fax temp = [GLOBAL_STATE "cursor_y"] + 1
+        [GLOBAL_STATE "cursor_y"] = temp
+    end
+
+    foreal press == 67
+        fax temp = [GLOBAL_STATE "cursor_x"] + 1
+        [GLOBAL_STATE "cursor_x"] = temp
+    end
+
+    foreal press == 68
+        fax temp = [GLOBAL_STATE "cursor_x"] - 1
+        [GLOBAL_STATE "cursor_x"] = temp
+    end
+
+    foreal [GLOBAL_STATE "cursor_x"] < 0
+        [GLOBAL_STATE "cursor_x"] = 0
+    end
+
+    foreal [GLOBAL_STATE "cursor_y"] < 0
+        [GLOBAL_STATE "cursor_y"] = 0
+    end
+
+    foreal [GLOBAL_STATE "cursor_x"] > [GLOBAL_STATE "term_width"]
+        [GLOBAL_STATE "cursor_x"] = [GLOBAL_STATE "term_width"]
+    end
+
+    foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
+        [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
+    end
 end
 
-lowkey on_press{press, state}
+lowkey on_press_exit{press}
     foreal press == 3
         fire std.exit("exit")
     end
+end
 
-    
+lowkey on_press{press}
+    fire on_press_arrow(press)
+    fire on_press_exit(press)
+end
+
+lowkey handle_empty{}
 end
 
 lowkey main{}
