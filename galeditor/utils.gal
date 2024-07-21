@@ -1,0 +1,3 @@
+lowkey clear_screen{}
+    fire std.print("[2J[H")
+end
