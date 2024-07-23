@@ -4,8 +4,8 @@ lowkey init_global_state{}
     fax GLOBAL_STATE = ""
     [GLOBAL_STATE "program_state"] = GLOBAL_STATE_EDITING_FILE
     [GLOBAL_STATE "editing_line"] = 0
-    [GLOBAL_STATE "cursor_x"] = 0
-    [GLOBAL_STATE "cursor_y"] = 0
+    [GLOBAL_STATE "cursor_x"] = 1
+    [GLOBAL_STATE "cursor_y"] = 1
     [GLOBAL_STATE "shift_x"] = 0 ` used for when text is too long to fit in the terminal 
     [GLOBAL_STATE "shift_y"] = 0 ` same as last
     [GLOBAL_STATE "term_width"] = fire term.term_width()
