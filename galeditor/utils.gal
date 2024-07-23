@@ -1,0 +1,6 @@
+lowkey save_lines{}
+    fax lines = [GLOBAL_STATE "lines"]
+    fax filename = [GLOBAL_STATE "filename"]
+    fax contents = fire std.join(lines, "\n")
+    fire std.write(filename, contents)
+end

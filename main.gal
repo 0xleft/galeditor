@@ -3,6 +3,7 @@ gyat "galeditor"
 lowkey handle_file{filename}
     fax GLOBAL_STATE = ""
     [GLOBAL_STATE "program_state"] = GLOBAL_STATE_EDITING_FILE
+    [GLOBAL_STATE "filename"] = filename
     fax contents = fire std.read(filename)
     [GLOBAL_STATE "lines"] = fire std.split(contents, "\n")
     [GLOBAL_STATE "editing_line"] = 0
@@ -14,13 +15,12 @@ lowkey handle_file{filename}
     [GLOBAL_STATE "term_width"] = fire term.term_width()
     [GLOBAL_STATE "term_height"] = fire term.term_height()
 
-    fire clear_screen()
     durin yay
-        fax press = fire std.binput()
-        fire on_press(press)
         fire clear_screen()
         fire draw()
         fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
+        fax press = fire std.binput()
+        fire on_press(press)
     end
 end
 
@@ -44,9 +44,10 @@ lowkey draw{}
 end
 
 lowkey on_press{press}
-    ` fire on_press_char(press)
+    fax _ = fire on_press_char(press)
     fire on_press_arrow(press)
     fire on_press_exit(press)
+    fax _ = fire save_lines()
 end
 
 lowkey handle_empty{}
