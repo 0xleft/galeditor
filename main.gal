@@ -3,11 +3,14 @@ gyat "galeditor"
 lowkey handle_file{filename}
     fax GLOBAL_STATE = ""
     [GLOBAL_STATE "program_state"] = GLOBAL_STATE_EDITING_FILE
-    [GLOBAL_STATE "buffer"] = fire std.read(filename)
+    fax contents = fire std.read(filename)
+    [GLOBAL_STATE "lines"] = fire std.split(contents, "\n")
+    [GLOBAL_STATE "editing_line"] = 0
     [GLOBAL_STATE "file_exists"] = fire std.exists(filename)
-    [GLOBAL_STATE "filename"] = filename
     [GLOBAL_STATE "cursor_x"] = 0
     [GLOBAL_STATE "cursor_y"] = 0
+    [GLOBAL_STATE "shift_x"] = 0
+    [GLOBAL_STATE "shift_y"] = 0
     [GLOBAL_STATE "term_width"] = fire term.term_width()
     [GLOBAL_STATE "term_height"] = fire term.term_height()
 
@@ -16,55 +19,32 @@ lowkey handle_file{filename}
         fax press = fire std.binput()
         fire on_press(press)
         fire clear_screen()
+        fire draw()
         fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
     end
 end
 
-lowkey on_press_arrow{press}
-    foreal press == 65
-        fax temp = [GLOBAL_STATE "cursor_y"] - 1
-        [GLOBAL_STATE "cursor_y"] = temp
-    end
+lowkey draw{}
+    fax lines = [GLOBAL_STATE "lines"]
+    fax term_width = [GLOBAL_STATE "term_width"]
+    fax term_height = [GLOBAL_STATE "term_height"]
+    fax editing_line = [GLOBAL_STATE "editing_line"]
+    fax cursor_x = [GLOBAL_STATE "cursor_x"]
+    fax cursor_y = [GLOBAL_STATE "cursor_y"]
+    fax shift_x = [GLOBAL_STATE "shift_x"]
+    fax shift_y = [GLOBAL_STATE "shift_y"]
 
-    foreal press == 66
-        fax temp = [GLOBAL_STATE "cursor_y"] + 1
-        [GLOBAL_STATE "cursor_y"] = temp
-    end
-
-    foreal press == 67
-        fax temp = [GLOBAL_STATE "cursor_x"] + 1
-        [GLOBAL_STATE "cursor_x"] = temp
-    end
-
-    foreal press == 68
-        fax temp = [GLOBAL_STATE "cursor_x"] - 1
-        [GLOBAL_STATE "cursor_x"] = temp
-    end
-
-    foreal [GLOBAL_STATE "cursor_x"] < 0
-        [GLOBAL_STATE "cursor_x"] = 0
-    end
-
-    foreal [GLOBAL_STATE "cursor_y"] < 0
-        [GLOBAL_STATE "cursor_y"] = 0
-    end
-
-    foreal [GLOBAL_STATE "cursor_x"] > [GLOBAL_STATE "term_width"]
-        [GLOBAL_STATE "cursor_x"] = [GLOBAL_STATE "term_width"]
-    end
-
-    foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
-        [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
-    end
-end
-
-lowkey on_press_exit{press}
-    foreal press == 3
-        fire std.exit("exit")
+    fax i = 0
+    fax length = fire std.len_indecies(lines)
+    durin i < length
+        fax line = [lines i]
+        fire std.println(line)
+        fax i = i + 1
     end
 end
 
 lowkey on_press{press}
+    ` fire on_press_char(press)
     fire on_press_arrow(press)
     fire on_press_exit(press)
 end

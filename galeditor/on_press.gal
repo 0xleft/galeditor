@@ -1,0 +1,65 @@
+lowkey on_press_arrow{press}
+    foreal press == 65
+        fax temp = [GLOBAL_STATE "cursor_y"] - 1
+        [GLOBAL_STATE "cursor_y"] = temp
+        fax temp = [GLOBAL_STATE "editing_line"] - 1
+        [GLOBAL_STATE "editing_line"] = temp
+    end
+
+    foreal press == 66
+        fax temp = [GLOBAL_STATE "cursor_y"] + 1
+        [GLOBAL_STATE "cursor_y"] = temp
+        fax temp = [GLOBAL_STATE "editing_line"] + 1
+        [GLOBAL_STATE "editing_line"] = temp
+    end
+
+    foreal press == 67
+        fax temp = [GLOBAL_STATE "cursor_x"] + 1
+        [GLOBAL_STATE "cursor_x"] = temp
+    end
+
+    foreal press == 68
+        fax temp = [GLOBAL_STATE "cursor_x"] - 1
+        [GLOBAL_STATE "cursor_x"] = temp
+    end
+
+    foreal [GLOBAL_STATE "cursor_x"] < 0
+        [GLOBAL_STATE "cursor_x"] = 0
+    end
+
+    foreal [GLOBAL_STATE "cursor_y"] < 0
+        [GLOBAL_STATE "cursor_y"] = 0
+        ` todo shift
+    end
+
+    foreal [GLOBAL_STATE "cursor_x"] > [GLOBAL_STATE "term_width"]
+        [GLOBAL_STATE "cursor_x"] = [GLOBAL_STATE "term_width"]
+    end
+
+    foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
+        [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
+        ` todo shift
+    end
+end
+
+lowkey on_press_exit{press}
+    foreal press == 3
+        fire clear_screen()
+        fire set_cursor(0, 0)
+        fire std.exit()
+    end
+end
+
+lowkey on_press_char{press}
+    foreal press < 65 || press > 90
+        fax lines = [GLOBAL_STATE "lines"]
+        fax editing_line = [GLOBAL_STATE "editing_line"]
+        fax line = [lines editing_line]
+        foreal line == nuthin
+            fax line = ""
+        end
+        fax line = fire std.insert(line, [GLOBAL_STATE "cursor_x"], press)
+        [lines editing_line] = line
+        [GLOBAL_STATE "lines"] = lines
+    end
+end
