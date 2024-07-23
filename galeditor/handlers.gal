@@ -2,11 +2,21 @@ lowkey on_press_arrow{press}
     foreal press == 65
         fax temp = [GLOBAL_STATE "cursor_y"] - 1
         [GLOBAL_STATE "cursor_y"] = temp
+
+        fax temp = [GLOBAL_STATE "editing_line"] - 1
+        [GLOBAL_STATE "editing_line"] = temp
+
+        foreal [GLOBAL_STATE "editing_line"] < 0
+            [GLOBAL_STATE "editing_line"] = 0
+        end
     end
 
     foreal press == 66
         fax temp = [GLOBAL_STATE "cursor_y"] + 1
         [GLOBAL_STATE "cursor_y"] = temp
+
+        fax temp = [GLOBAL_STATE "editing_line"] + 1
+        [GLOBAL_STATE "editing_line"] = temp
     end
 
     foreal press == 67
@@ -19,12 +29,12 @@ lowkey on_press_arrow{press}
         [GLOBAL_STATE "cursor_x"] = temp
     end
 
-    foreal [GLOBAL_STATE "cursor_x"] < 0
-        [GLOBAL_STATE "cursor_x"] = 0
+    foreal [GLOBAL_STATE "cursor_x"] < 1
+        [GLOBAL_STATE "cursor_x"] = 1
     end
 
-    foreal [GLOBAL_STATE "cursor_y"] < 0
-        [GLOBAL_STATE "cursor_y"] = 0
+    foreal [GLOBAL_STATE "cursor_y"] < 1
+        [GLOBAL_STATE "cursor_y"] = 1
         ` todo shift
     end
 
@@ -49,7 +59,8 @@ end
 lowkey on_press_char{press}
     fax char = fire std.char(press)
 
-    foreal press >= 97 && press <= 122
+    ` letters
+    foreal (press >= 97 && press <= 122)
         fax lines = [GLOBAL_STATE "lines"]
         fax editing_line = [GLOBAL_STATE "editing_line"]
         fax line = [lines editing_line]
@@ -59,15 +70,25 @@ lowkey on_press_char{press}
         rizzult 0
     end
 
+    ` backspace
     foreal press == 127
         fax lines = [GLOBAL_STATE "lines"]
         fax editing_line = [GLOBAL_STATE "editing_line"]
         fax line = [lines editing_line]
-        fax line = fire std.slice(line, 0, fire std.len(line) - 1)
+        foreal line === nuthin
+            line = ""
+        end
+        fax length = fire std.len(line) - 1
+        foreal length < 0
+            length = 0
+        end
+        fax line = fire std.slice(line, 0, length)
         [lines editing_line] = line
         [GLOBAL_STATE "lines"] = lines
         rizzult 0
     end
+
+    rizzult 0
 
     fax lines = [GLOBAL_STATE "lines"]
     fax editing_line = [GLOBAL_STATE "editing_line"]

@@ -1,19 +1,22 @@
 gyat "galeditor"
 
-lowkey handle_file{filename}
+lowkey init_global_state{}
     fax GLOBAL_STATE = ""
     [GLOBAL_STATE "program_state"] = GLOBAL_STATE_EDITING_FILE
+    [GLOBAL_STATE "editing_line"] = 0
+    [GLOBAL_STATE "cursor_x"] = 0
+    [GLOBAL_STATE "cursor_y"] = 0
+    [GLOBAL_STATE "shift_x"] = 0 ` used for when text is too long to fit in the terminal 
+    [GLOBAL_STATE "shift_y"] = 0 ` same as last
+    [GLOBAL_STATE "term_width"] = fire term.term_width()
+    [GLOBAL_STATE "term_height"] = fire term.term_height()
+end
+
+lowkey handle_file{filename}
     [GLOBAL_STATE "filename"] = filename
     fax contents = fire std.read(filename)
     [GLOBAL_STATE "lines"] = fire std.split(contents, "\n")
-    [GLOBAL_STATE "editing_line"] = 0
     [GLOBAL_STATE "file_exists"] = fire std.exists(filename)
-    [GLOBAL_STATE "cursor_x"] = 0
-    [GLOBAL_STATE "cursor_y"] = 0
-    [GLOBAL_STATE "shift_x"] = 0
-    [GLOBAL_STATE "shift_y"] = 0
-    [GLOBAL_STATE "term_width"] = fire term.term_width()
-    [GLOBAL_STATE "term_height"] = fire term.term_height()
 
     durin yay
         fire clear_screen()
@@ -47,7 +50,8 @@ lowkey on_press{press}
     fax _ = fire on_press_char(press)
     fire on_press_arrow(press)
     fire on_press_exit(press)
-    fax _ = fire save_lines()
+    ` todo move this elsewhere
+    ` fax _ = fire save_lines()
 end
 
 lowkey handle_empty{}
@@ -56,6 +60,8 @@ end
 lowkey main{}
     fax GLOBAL_STATE_EDITING_FILE = 0
     fax GLOBAL_STATE_WRITING_COMMAND = 1
+
+    fire init_global_state()
 
     fax file = [args 2]
     foreal file == nuthin
