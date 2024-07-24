@@ -20,6 +20,7 @@ lowkey handle_file{filename}
 
     durin yay
         fire clear_screen()
+        fire set_cursor(0, 0)
         fire draw()
         fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
         fax press = fire std.binput()
@@ -37,12 +38,26 @@ lowkey draw{}
     fax shift_x = [GLOBAL_STATE "shift_x"]
     fax shift_y = [GLOBAL_STATE "shift_y"]
 
-    fax i = 0
-    fax length = fire std.len_indecies(lines)
-    durin i < length
+    fax y_start = shift_y
+    fax y_end = term_height + shift_y
+
+    fax x_start = shift_x
+    fax x_end = term_width + shift_x
+
+    fax i = y_start
+    durin i < y_end
         fax line = [lines i]
-        fire std.println(line)
-        fax i = i + 1
+        fax line_length = fire std.len(line)
+        fax temp_x_end = fire utils.min(x_end, line_length)
+        foreal x_start < temp_x_end
+            fax line = fire std.slice(line, x_start, temp_x_end)
+            fire std.print(line)
+        end
+        foreal i < y_end - 1
+            fire std.print("\n")
+        end
+
+        i = i + 1
     end
 end
 

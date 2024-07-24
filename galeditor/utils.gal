@@ -1,6 +1,13 @@
-lowkey save_lines{}
+lowkey utils.save_lines{}
     fax lines = [GLOBAL_STATE "lines"]
     fax filename = [GLOBAL_STATE "filename"]
     fax contents = fire std.join(lines, "\n")
     fire std.write(filename, contents)
+end
+
+lowkey utils.min{a, b}
+    foreal a < b
+        rizzult a
+    end
+    rizzult b
 end

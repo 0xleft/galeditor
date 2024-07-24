@@ -16,10 +16,13 @@ lowkey shift_down{}
     fax lines = [GLOBAL_STATE "lines"]
     fax length = fire std.len_indecies(lines)
     fax term_height = [GLOBAL_STATE "term_height"]
-    ` todo check if this is correct
 
-    foreal shift_y > length - term_height
+    foreal shift_y + term_height > length
         [GLOBAL_STATE "shift_y"] = length - term_height
+    end
+
+    foreal [GLOBAL_STATE "editing_line"] > length - 1
+        [GLOBAL_STATE "editing_line"] = length - 1
     end
 end
 
@@ -41,7 +44,7 @@ lowkey shift_right{}
     fax lines = [GLOBAL_STATE "lines"]
     fax editing_line = [GLOBAL_STATE "editing_line"]
     fax line = [lines editing_line]
-    fax length = fire std.len_indecies(line)
+    fax length = fire std.len(line)
     fax term_width = [GLOBAL_STATE "term_width"]
 
     foreal shift_x > length - term_width
@@ -72,7 +75,6 @@ lowkey on_press_arrow{press}
         [GLOBAL_STATE "cursor_y"] = y
 
         fax temp = [GLOBAL_STATE "editing_line"] + 1
-
         [GLOBAL_STATE "editing_line"] = temp
 
         foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
