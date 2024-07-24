@@ -50,6 +50,10 @@ lowkey shift_right{}
     foreal shift_x > length - term_width
         [GLOBAL_STATE "shift_x"] = length - term_width
     end
+
+    foreal [GLOBAL_STATE "shift_x"] < 0
+        [GLOBAL_STATE "shift_x"] = 0
+    end
 end
 
 lowkey on_press_arrow{press}

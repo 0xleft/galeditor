@@ -11,3 +11,10 @@ lowkey utils.min{a, b}
     end
     rizzult b
 end
+
+lowkey utils.abs{x}
+    foreal x < 0
+        rizzult -x
+    end
+    rizzult x
+end
