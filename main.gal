@@ -10,6 +10,25 @@ lowkey init_global_state{}
     [GLOBAL_STATE "shift_y"] = 0 ` same as last
     [GLOBAL_STATE "term_width"] = fire term.term_width()
     [GLOBAL_STATE "term_height"] = fire term.term_height()
+    [GLOBAL_STATE "command_buffer"] = ""
+    [GLOBAL_STATE "is_escape"] = nay
+end
+
+lowkey command_loop{}
+    durin yay
+        fire set_cursor(1, [GLOBAL_STATE "term_height"])
+    end
+end
+
+lowkey editing_loop{}
+    durin yay
+        fire clear_screen()
+        fire set_cursor(0, 0)
+        fire draw()
+        fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
+        fax press = fire std.binput()
+        fire editor.on_press(press)
+    end
 end
 
 lowkey handle_file{filename}
@@ -18,14 +37,15 @@ lowkey handle_file{filename}
     [GLOBAL_STATE "lines"] = fire std.split(contents, "\n")
     [GLOBAL_STATE "file_exists"] = fire std.exists(filename)
 
-    durin yay
-        fire clear_screen()
-        fire set_cursor(0, 0)
-        fire draw()
-        fire set_cursor([GLOBAL_STATE "cursor_x"], [GLOBAL_STATE "cursor_y"])
-        fax press = fire std.binput()
-        fire on_press(press)
-    end
+    fire editing_loop()
+end
+
+lowkey handle_empty{}
+    [GLOBAL_STATE "filename"] = "~"
+    [GLOBAL_STATE "lines"] = ""
+    [GLOBAL_STATE "file_exists"] = nay
+    
+    fire editing_loop()
 end
 
 lowkey draw{}
@@ -61,15 +81,12 @@ lowkey draw{}
     end
 end
 
-lowkey on_press{press}
-    fax _ = fire on_press_char(press)
-    fire on_press_arrow(press)
-    fire on_press_exit(press)
-    ` todo move this elsewhere
-    ` fax _ = fire save_lines()
-end
-
-lowkey handle_empty{}
+lowkey editor.on_press{press}
+    fax should = fire editor.on_press_arrow(press)
+    foreal should != yay
+        fax _ = fire editor.on_press_char(press)
+        fire editor.on_press_exit(press)
+    end
 end
 
 lowkey main{}
