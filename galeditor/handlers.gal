@@ -20,10 +20,6 @@ lowkey editor.shift_down{}
     foreal shift_y + term_height > length
         [GLOBAL_STATE "shift_y"] = length - term_height
     end
-
-    foreal [GLOBAL_STATE "editing_line"] > length - 1
-        [GLOBAL_STATE "editing_line"] = length - 1
-    end
 end
 
 lowkey editor.shift_left{}
@@ -90,6 +86,13 @@ lowkey editor.on_press_arrow{press}
 
         fax temp = [GLOBAL_STATE "editing_line"] + 1
         [GLOBAL_STATE "editing_line"] = temp
+
+        fax lines = [GLOBAL_STATE "lines"]
+        fax line = [lines temp]
+        foreal line == nuthin
+            [lines temp] = ""
+        end
+        [GLOBAL_STATE "lines"] = lines
 
         foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
             [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]

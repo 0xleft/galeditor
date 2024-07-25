@@ -37,9 +37,18 @@ lowkey saving_loop{}
     end
     foreal char == "y"
         fax file_exists = [GLOBAL_STATE "file_exists"]
-        foreal file_exists == yay
+        foreal file_exists == nay
             ` prompt for filename
-            ` set filename
+            durin yay
+                fire clear_screen()
+                fire set_cursor(0, 0)
+                fax filename = fire std.inputln("Enter filename: ")
+                [GLOBAL_STATE "filename"] = filename
+                foreal filename != ""
+                    fire utils.save_lines()
+                    rizzult yay
+                end
+            end
         end
 
         fire utils.save_lines()
@@ -58,8 +67,10 @@ lowkey handle_file{filename}
 end
 
 lowkey handle_empty{}
-    [GLOBAL_STATE "filename"] = "~"
+    [GLOBAL_STATE "filename"] = ""
+    fax lines = fire std.split("", "\n")
     [GLOBAL_STATE "lines"] = ""
+
     [GLOBAL_STATE "file_exists"] = nay
     
     fire editing_loop()
@@ -84,6 +95,9 @@ lowkey draw{}
     fax i = y_start
     durin i < y_end
         fax line = [lines i]
+        foreal line == nuthin
+            fax line = ""
+        end
         fax line_length = fire std.len(line)
         fax temp_x_end = fire utils.min(x_end, line_length)
         foreal x_start < temp_x_end
@@ -93,7 +107,7 @@ lowkey draw{}
         foreal i < y_end - 1
             fire std.print("\n")
         end
-
+        
         i = i + 1
     end
 end
