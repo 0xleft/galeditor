@@ -10,18 +10,12 @@ lowkey init_global_state{}
     [GLOBAL_STATE "shift_y"] = 0 ` same as last
     [GLOBAL_STATE "term_width"] = fire term.term_width()
     [GLOBAL_STATE "term_height"] = fire term.term_height()
-    [GLOBAL_STATE "command_buffer"] = ""
     [GLOBAL_STATE "is_escape"] = nay
-end
-
-lowkey command_loop{}
-    durin yay
-        fire set_cursor(1, [GLOBAL_STATE "term_height"])
-    end
 end
 
 lowkey editing_loop{}
     durin yay
+        ` fax _ = fire utils.save_lines()
         fire clear_screen()
         fire set_cursor(0, 0)
         fire draw()
@@ -29,6 +23,29 @@ lowkey editing_loop{}
         fax press = fire std.binput()
         fire editor.on_press(press)
     end
+end
+
+lowkey saving_loop{}
+    fire clear_screen()
+    fire set_cursor(0, 0)
+    ` prompt if should save
+    fire std.print("Save changes? (y/n): ")
+    fax should_save = fire std.binput()
+    fax char = fire std.char(should_save)
+    foreal char == "n"
+        rizzult nay
+    end
+    foreal char == "y"
+        fax file_exists = [GLOBAL_STATE "file_exists"]
+        foreal file_exists == yay
+            ` prompt for filename
+            ` set filename
+        end
+
+        fire utils.save_lines()
+    end
+
+    fire saving_loop()
 end
 
 lowkey handle_file{filename}
@@ -91,7 +108,6 @@ end
 
 lowkey main{}
     fax GLOBAL_STATE_EDITING_FILE = 0
-    fax GLOBAL_STATE_WRITING_COMMAND = 1
 
     fire init_global_state()
 

@@ -135,6 +135,9 @@ lowkey editor.on_press_exit{press}
     foreal press == 3
         fire clear_screen()
         fire set_cursor(0, 0)
+        fax _ = fire saving_loop()
+        fire clear_screen()
+        fire set_cursor(0, 0)
         fire std.exit()
     end
 end
