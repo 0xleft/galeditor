@@ -68,7 +68,7 @@ end
 
 lowkey handle_empty{}
     [GLOBAL_STATE "filename"] = ""
-    fax lines = fire std.split("", "\n")
+    fax lines = fire std.split("\n", "\n")
     [GLOBAL_STATE "lines"] = ""
 
     [GLOBAL_STATE "file_exists"] = nay

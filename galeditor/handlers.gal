@@ -57,81 +57,93 @@ lowkey editor.on_press_arrow{press}
         rizzult nay
     end
 
-    foreal press == 65
-        [GLOBAL_STATE "is_escape"] = nay
-
-        fax y = [GLOBAL_STATE "cursor_y"] - 1
-        [GLOBAL_STATE "cursor_y"] = y
-
-        fax temp = [GLOBAL_STATE "editing_line"] - 1
-        [GLOBAL_STATE "editing_line"] = temp
-
-        foreal [GLOBAL_STATE "editing_line"] < 0
-            [GLOBAL_STATE "editing_line"] = 0
-        end
-
-        foreal [GLOBAL_STATE "cursor_y"] < 1
-            [GLOBAL_STATE "cursor_y"] = 1
-            fire editor.shift_up()
-        end
-
-        rizzult yay
-    end
-
-    foreal press == 66
-        [GLOBAL_STATE "is_escape"] = nay
-
-        fax y = [GLOBAL_STATE "cursor_y"] + 1
-        [GLOBAL_STATE "cursor_y"] = y
-
-        fax temp = [GLOBAL_STATE "editing_line"] + 1
-        [GLOBAL_STATE "editing_line"] = temp
-
-        fax lines = [GLOBAL_STATE "lines"]
-        fax line = [lines temp]
-        foreal line == nuthin
-            [lines temp] = ""
-        end
-        [GLOBAL_STATE "lines"] = lines
-
-        foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
-            [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
-            fire editor.shift_down()
-        end
-
-        rizzult yay
-    end
-
     foreal press == 67
-        [GLOBAL_STATE "is_escape"] = nay
-
-        fax x = [GLOBAL_STATE "cursor_x"] + 1
-
-        [GLOBAL_STATE "cursor_x"] = x
-
-        foreal [GLOBAL_STATE "cursor_x"] > [GLOBAL_STATE "term_width"]
-            [GLOBAL_STATE "cursor_x"] = [GLOBAL_STATE "term_width"]
-            fire editor.shift_right()
-        end
-
-        rizzult yay
+        fire editor.on_press_right()
     end
-
+    foreal press == 66
+        fire editor.on_press_down()
+    end
     foreal press == 68
-        [GLOBAL_STATE "is_escape"] = nay
-        fax x = [GLOBAL_STATE "cursor_x"] - 1
+        fire editor.on_press_left()
+    end
+    foreal press == 65
+        fire editor.on_press_up()
+    end
+    rizzult nay
+end
 
-        [GLOBAL_STATE "cursor_x"] = x
+lowkey editor.on_press_down{}
+    [GLOBAL_STATE "is_escape"] = nay
 
-        foreal [GLOBAL_STATE "cursor_x"] < 1
-            [GLOBAL_STATE "cursor_x"] = 1
-            fire editor.shift_left()
-        end
+    fax y = [GLOBAL_STATE "cursor_y"] + 1
+    [GLOBAL_STATE "cursor_y"] = y
 
-        rizzult yay
+    fax temp = [GLOBAL_STATE "editing_line"] + 1
+    [GLOBAL_STATE "editing_line"] = temp
+
+    fax lines = [GLOBAL_STATE "lines"]
+    fax line = [lines temp]
+    foreal line == nuthin
+        [lines temp] = ""
+    end
+    [GLOBAL_STATE "lines"] = lines
+
+    foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
+        [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
+        fire editor.shift_down()
     end
 
-    rizzult nay
+    rizzult yay
+end
+
+lowkey editor.on_press_up{}
+    [GLOBAL_STATE "is_escape"] = nay
+
+    fax y = [GLOBAL_STATE "cursor_y"] - 1
+    [GLOBAL_STATE "cursor_y"] = y
+
+    fax temp = [GLOBAL_STATE "editing_line"] - 1
+    [GLOBAL_STATE "editing_line"] = temp
+
+    foreal [GLOBAL_STATE "editing_line"] < 0
+        [GLOBAL_STATE "editing_line"] = 0
+    end
+
+    foreal [GLOBAL_STATE "cursor_y"] < 1
+        [GLOBAL_STATE "cursor_y"] = 1
+        fire editor.shift_up()
+    end
+
+    rizzult yay
+end
+
+lowkey editor.on_press_left{}
+    [GLOBAL_STATE "is_escape"] = nay
+    fax x = [GLOBAL_STATE "cursor_x"] - 1
+
+    [GLOBAL_STATE "cursor_x"] = x
+
+    foreal [GLOBAL_STATE "cursor_x"] < 1
+        [GLOBAL_STATE "cursor_x"] = 1
+        fire editor.shift_left()
+    end
+
+    rizzult yay
+end
+
+lowkey editor.on_press_right{}
+    [GLOBAL_STATE "is_escape"] = nay
+
+    fax x = [GLOBAL_STATE "cursor_x"] + 1
+
+    [GLOBAL_STATE "cursor_x"] = x
+
+    foreal [GLOBAL_STATE "cursor_x"] > [GLOBAL_STATE "term_width"]
+        [GLOBAL_STATE "cursor_x"] = [GLOBAL_STATE "term_width"]
+        fire editor.shift_right()
+    end
+
+    rizzult yay
 end
 
 lowkey editor.on_press_exit{press}
@@ -156,11 +168,6 @@ lowkey editor.on_press_char{press}
         rizzult 0
     end
 
-    fax writable = fire std.writable(press)
-    foreal writable === nay
-        rizzult 0
-    end
-
     ` backspace
     foreal press == 127
         fax lines = [GLOBAL_STATE "lines"]
@@ -179,11 +186,41 @@ lowkey editor.on_press_char{press}
         rizzult 0
     end
 
+    ` enter
+    foreal press == 13
+        fax _ = fire editor.on_press_down()
+        rizzult 0
+    end
+
+    fax writable = fire std.writable(press)
+    foreal writable === nay
+        rizzult 0
+    end
+
     fax lines = [GLOBAL_STATE "lines"]
     fax editing_line = [GLOBAL_STATE "editing_line"]
     fax line = [lines editing_line]
-    fax line = line + char
+    foreal line === nuthin
+        line = ""
+    end
+
+    fax length = fire std.len(line)
+    fax cursor_x = [GLOBAL_STATE "cursor_x"] - 1
+    foreal cursor_x > length
+        fax diff = cursor_x - length
+        fax spaces = fire std.repeat(" ", diff)
+        fax line = line + spaces
+    end
+
+    ` insert char
+    fax line = fire std.insert(line, cursor_x, char)
     [lines editing_line] = line
     [GLOBAL_STATE "lines"] = lines
+
+    fax shift = 1
+    ` shift the cursor to the right
+    fax x = [GLOBAL_STATE "cursor_x"] + shift
+    [GLOBAL_STATE "cursor_x"] = x
+
     rizzult 0
 end
