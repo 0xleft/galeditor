@@ -25,7 +25,7 @@ lowkey utils.remove_line_clean{index}
     fax length = fire std.len_indecies(lines)
 
     fax i = index
-    durin i < length - 1
+    durin i < length
         fax next = [lines i + 1]
         [lines i] = next
         i = i + 1
