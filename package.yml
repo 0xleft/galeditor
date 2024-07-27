@@ -1,0 +1,15 @@
+name: galeditor
+version: 0.1.0
+description: A simple text editor written in galang.
+license: MIT
+homepage: https://github.com/0xleft/galeditor
+keywords: [editor, text, galang]
+authors:
+  - name: 0xleft
+    email: none
+
+dependencies: []
+
+executables:
+  - name: galeditor
+    file: main.gal
