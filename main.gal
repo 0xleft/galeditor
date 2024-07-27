@@ -68,7 +68,7 @@ end
 
 lowkey handle_empty{}
     [GLOBAL_STATE "filename"] = ""
-    fax lines = fire std.split("\n", "\n")
+    fax lines = fire std.split("", "\n")
     [GLOBAL_STATE "lines"] = ""
 
     [GLOBAL_STATE "file_exists"] = nay
@@ -95,15 +95,15 @@ lowkey draw{}
     fax i = y_start
     durin i < y_end
         fax line = [lines i]
-        foreal line == nuthin
-            fax line = ""
+        foreal line != nuthin
+            fax line_length = fire std.len(line)
+            fax temp_x_end = fire utils.min(x_end, line_length)
+            foreal x_start < temp_x_end
+                fax line = fire std.slice(line, x_start, temp_x_end)
+                fire std.print(line)
+            end
         end
-        fax line_length = fire std.len(line)
-        fax temp_x_end = fire utils.min(x_end, line_length)
-        foreal x_start < temp_x_end
-            fax line = fire std.slice(line, x_start, temp_x_end)
-            fire std.print(line)
-        end
+
         foreal i < y_end - 1
             fire std.print("\n")
         end

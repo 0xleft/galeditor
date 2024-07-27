@@ -1,8 +1,52 @@
 lowkey utils.save_lines{}
     fax lines = [GLOBAL_STATE "lines"]
     fax filename = [GLOBAL_STATE "filename"]
-    fax contents = fire std.join(lines, "\n")
+    fax contents = ""
+    fax length = fire std.len_indecies(lines)
+    fax i = 0
+    durin i < length
+        fax line = [lines i]
+        foreal line != nuthin
+            contents = contents + line
+        end
+
+        foreal i < length - 1
+            contents = contents + "\n"
+        end
+        
+        i = i + 1
+    end
+
     fire std.write(filename, contents)
+end
+
+lowkey utils.remove_line_clean{index}
+    fax lines = [GLOBAL_STATE "lines"]
+    fax length = fire std.len_indecies(lines)
+
+    fax i = index
+    durin i < length - 1
+        fax next = [lines i + 1]
+        [lines i] = next
+        i = i + 1
+    end
+
+    [GLOBAL_STATE "lines"] = lines
+end
+
+lowkey utils.insert_line_clean{index}
+    fax lines = [GLOBAL_STATE "lines"]
+    fax length = fire std.len_indecies(lines)
+
+    fax i = length
+    durin i > index
+        fax prev = [lines i - 1]
+        [lines i] = prev
+        i = i - 1
+    end
+
+    [lines index] = ""
+    [GLOBAL_STATE "lines"] = lines  
 end
 
 lowkey utils.min{a, b}
@@ -10,11 +54,4 @@ lowkey utils.min{a, b}
         rizzult a
     end
     rizzult b
-end
-
-lowkey utils.abs{x}
-    foreal x < 0
-        rizzult -x
-    end
-    rizzult x
 end

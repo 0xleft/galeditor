@@ -87,6 +87,9 @@ lowkey editor.on_press_down{}
         [lines temp] = ""
     end
     [GLOBAL_STATE "lines"] = lines
+    
+    [GLOBAL_STATE "cursor_x"] = 1
+    [GLOBAL_STATE "shift_x"] = 0
 
     foreal [GLOBAL_STATE "cursor_y"] > [GLOBAL_STATE "term_height"]
         [GLOBAL_STATE "cursor_y"] = [GLOBAL_STATE "term_height"]
@@ -108,6 +111,17 @@ lowkey editor.on_press_up{}
     foreal [GLOBAL_STATE "editing_line"] < 0
         [GLOBAL_STATE "editing_line"] = 0
     end
+
+    fax lines = [GLOBAL_STATE "lines"]
+    fax editing_line = [GLOBAL_STATE "editing_line"]
+    fax line = [lines editing_line]
+    foreal line == nuthin
+        [lines temp] = ""
+    end
+    [GLOBAL_STATE "lines"] = lines
+
+    [GLOBAL_STATE "cursor_x"] = 1
+    [GLOBAL_STATE "shift_x"] = 0
 
     foreal [GLOBAL_STATE "cursor_y"] < 1
         [GLOBAL_STATE "cursor_y"] = 1
@@ -179,15 +193,30 @@ lowkey editor.on_press_char{press}
         fax length = fire std.len(line) - 1
         foreal length < 0
             length = 0
+
+            fire utils.remove_line_clean(editing_line)
+            fire editor.on_press_up()
         end
+        
         fax line = fire std.slice(line, 0, length)
         [lines editing_line] = line
         [GLOBAL_STATE "lines"] = lines
+
+        ` shift the cursor to the left
+        fax x = [GLOBAL_STATE "cursor_x"] - 1
+        foreal x < 1
+            x = 1
+        end
+
+        [GLOBAL_STATE "cursor_x"] = x
+
         rizzult 0
     end
 
     ` enter
     foreal press == 13
+        fax editing_line = [GLOBAL_STATE "editing_line"]
+        fire utils.insert_line_clean(editing_line + 1)
         fax _ = fire editor.on_press_down()
         rizzult 0
     end
