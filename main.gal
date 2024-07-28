@@ -1,4 +1,4 @@
-gyat "galeditor/galeditor"
+gyat "galeditor"
 
 lowkey init_global_state{}
     fax GLOBAL_STATE = ""

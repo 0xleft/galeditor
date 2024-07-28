@@ -55,3 +55,12 @@ lowkey utils.min{a, b}
     end
     rizzult b
 end
+
+lowkey utils.remove{str, index}
+    fax length = fire std.len(str)
+    fax index = index - 1
+    fax str1 = fire std.slice(str, 0, index)
+    fax index = index + 1
+    fax str2 = fire std.slice(str, index, length)
+    rizzult str1 + str2
+end

@@ -75,13 +75,19 @@ end
 lowkey editor.on_press_down{}
     [GLOBAL_STATE "is_escape"] = nay
 
+    fax lines = [GLOBAL_STATE "lines"]
     fax y = [GLOBAL_STATE "cursor_y"] + 1
+
+    fax length = fire std.len_indecies(lines)
+    foreal y + [GLOBAL_STATE "shift_y"] > length
+        rizzult yay
+    end
+
     [GLOBAL_STATE "cursor_y"] = y
 
     fax temp = [GLOBAL_STATE "editing_line"] + 1
     [GLOBAL_STATE "editing_line"] = temp
 
-    fax lines = [GLOBAL_STATE "lines"]
     fax line = [lines temp]
     foreal line == nuthin
         [lines temp] = ""
@@ -196,17 +202,42 @@ lowkey editor.on_press_char{press}
 
             fire utils.remove_line_clean(editing_line)
             fire editor.on_press_up()
+
+            rizzult 0
         end
         
-        fax line = fire std.slice(line, 0, length)
-        [lines editing_line] = line
-        [GLOBAL_STATE "lines"] = lines
-
         ` shift the cursor to the left
         fax x = [GLOBAL_STATE "cursor_x"] - 1
+
         foreal x < 1
+            ` move all the contents of the line and add it to the previous line
+            fax lines = [GLOBAL_STATE "lines"]
+            fax editing_line = [GLOBAL_STATE "editing_line"]
+            fax line = [lines editing_line]
+            fax length = fire std.len(line)
+            foreal editing_line > 0
+                fax prev_line = [lines editing_line - 1]
+                fax prev_length = fire std.len(prev_line)
+                fax prev_line = prev_line + line
+                [lines editing_line - 1] = prev_line
+                [GLOBAL_STATE "lines"] = lines
+
+                fire utils.remove_line_clean(editing_line)
+                [GLOBAL_STATE "editing_line"] = editing_line - 1
+                [GLOBAL_STATE "cursor_x"] = prev_length + 1
+                fax new_y = [GLOBAL_STATE "cursor_y"] - 1
+                [GLOBAL_STATE "cursor_y"] = new_y
+                [GLOBAL_STATE "shift_x"] = 0
+            end
+
             x = 1
+            rizzult 0
         end
+
+        ` remove char
+        fax line = fire utils.remove(line, x)
+        [lines editing_line] = line
+        [GLOBAL_STATE "lines"] = lines
 
         [GLOBAL_STATE "cursor_x"] = x
 
@@ -216,7 +247,17 @@ lowkey editor.on_press_char{press}
     ` enter
     foreal press == 13
         fax editing_line = [GLOBAL_STATE "editing_line"]
+        fax lines = [GLOBAL_STATE "lines"]
+        fax line = [lines editing_line]
+        fax length = fire std.len(line)
+        fax cursor_x = [GLOBAL_STATE "cursor_x"] - 1
+        fax line1 = fire std.slice(line, 0, cursor_x)
+        fax line2 = fire std.slice(line, cursor_x, length)
+        [lines editing_line] = line1
         fire utils.insert_line_clean(editing_line + 1)
+        [lines editing_line + 1] = line2
+        [GLOBAL_STATE "lines"] = lines
+
         fax _ = fire editor.on_press_down()
         rizzult 0
     end

@@ -11,5 +11,5 @@ authors:
 dependencies: []
 
 executables:
-  - name: galeditor
+  - name: gl
     path: main.gal
