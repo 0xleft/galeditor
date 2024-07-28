@@ -93,7 +93,7 @@ lowkey editor.on_press_down{}
         [lines temp] = ""
     end
     [GLOBAL_STATE "lines"] = lines
-    
+
     [GLOBAL_STATE "cursor_x"] = 1
     [GLOBAL_STATE "shift_x"] = 0
 
@@ -155,6 +155,19 @@ lowkey editor.on_press_right{}
     [GLOBAL_STATE "is_escape"] = nay
 
     fax x = [GLOBAL_STATE "cursor_x"] + 1
+
+    fax lines = [GLOBAL_STATE "lines"]
+    fax editing_line = [GLOBAL_STATE "editing_line"]
+    fax line = [lines editing_line]
+    foreal line == nuthin
+        line = ""
+    end
+    fax length = fire std.len(line)
+
+    foreal x > length + 1
+        [GLOBAL_STATE "cursor_x"] = length + 1
+        rizzult yay
+    end
 
     [GLOBAL_STATE "cursor_x"] = x
 
