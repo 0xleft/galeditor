@@ -125,7 +125,7 @@ lowkey main{}
 
     fire init_global_state()
 
-    fax file = [args 2]
+    fax file = [args 0]
     foreal file == nuthin
         fire handle_empty()
     end

@@ -1,1 +1,1 @@
-gal main.gal $1
+gal run main.gal $1
