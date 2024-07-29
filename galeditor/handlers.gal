@@ -262,6 +262,9 @@ lowkey editor.on_press_char{press}
         fax editing_line = [GLOBAL_STATE "editing_line"]
         fax lines = [GLOBAL_STATE "lines"]
         fax line = [lines editing_line]
+        foreal line == nuthin
+            line = ""
+        end
         fax length = fire std.len(line)
         fax cursor_x = [GLOBAL_STATE "cursor_x"] - 1
         fax line1 = fire std.slice(line, 0, cursor_x)
